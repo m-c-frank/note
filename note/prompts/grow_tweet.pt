@@ -1,0 +1,24 @@
+convert the following text into an ultra concise tweet
+make sure to really condense it down to its essence
+it must have the asymptotically highest information to text ratio
+if there are details that do not matter to the overall idea
+just omit them. do not under any circumstances use language that
+does not directly contribute to the information density.
+your sole goal is to make the text understandable by anyone
+do not assume anything. it must also be neutral and appeal to
+anyone. especially if its an idea. but i hope you have the priorities
+straight. it is most important to really condense everything down to its
+essence.
+
+so here is the input text:
+<SEED>
+{seed_text}
+</SEED>
+
+again, make sure its understandable by anyone.
+think of it like a phd student that has to present his findings
+to the general population. take a serious step back
+consider all of the instructions carefully. be counterfactual and interesting
+while maintaining a neutral tone. also write everything in lowercase
+and use minimal symbols. the goal is to grow ideas from seeds into beautiful organisms
+so please help me out here and give it your best shot
