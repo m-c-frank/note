@@ -10,19 +10,21 @@ from langchain.schema.output_parser import StrOutputParser
 
 from model import FilePath
 
-def grow(seed:str, branch_function):
-    return branch_function(seed)
-
 def get_branch_prompt(name: str):
     with open(f"./prompts/{name}.pt", "r") as f:
         return f.read()
 
-def branch(seed_text:str, name:str):
-    prompt = get_branch_prompt(name)
+def evolve(seed: str, prompt: str) -> str:
+    # runs an api call to some magic text to text engine
     prompt_template = ChatPromptTemplate.from_template(prompt)
     model = ChatOpenAI()
     chain = prompt_template | model | StrOutputParser()
-    response = chain.invoke({"seed_text": seed_text})
+    response = chain.invoke({"seed_text": seed})
+    return response
+    
+def branch(seed_text:str, name:str) -> str:
+    prompt = get_branch_prompt(name)
+    response = evolve(seed_text, prompt)
     return response
 
 def main():
