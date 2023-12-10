@@ -8,57 +8,31 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 
+from model import FilePath
 
-class FilePath(BaseModel):
-    path: Path
+def grow(seed:str, branch_function):
+    return branch_function(seed)
 
-    @classmethod
-    def from_home_dir(cls, subdir: str, file_extension: str):
-        home_dir = Path.home()
-        dir_path = home_dir / "notes" / subdir
-        dir_path.mkdir(parents=True, exist_ok=True)
+def get_branch_prompt(name: str):
+    with open(f"./prompts/{name}.pt", "r") as f:
+        return f.read()
 
-        highest_num = max(
-            (int(p.stem) for p in dir_path.glob(f'*.{file_extension}') if p.stem.isdigit()), 
-            default=0
-        )
-
-        new_file = dir_path / f"{highest_num + 1}.{file_extension}"
-        return cls(path=new_file)
-
-    def open_in_editor(self):
-        editor = os.getenv('EDITOR', 'notepad' if os.name == 'nt' else 'vim')
-        subprocess.run([editor, str(self.path)])
-
-    def read_content(self):
-        with open(self.path, "r") as f:
-            return f.read()
-
-    def write_content(self, content: str):
-        with open(self.path, "w") as f:
-            f.write(content)
-
-# Function to transform seed text to tweet text
-def branch_to_tweet(seed_text: str):
-    prompt = ""
-    with open("./prompts/grow_tweet.pt", "r") as f:
-        prompt = f.read()
+def branch(seed_text:str, name:str):
+    prompt = get_branch_prompt(name)
     prompt_template = ChatPromptTemplate.from_template(prompt)
     model = ChatOpenAI()
     chain = prompt_template | model | StrOutputParser()
-    response = chain.invoke({"seed_text": seed_text}) 
+    response = chain.invoke({"seed_text": seed_text})
     return response
 
-# Main function
 def main():
-
-    seed_file = FilePath.from_home_dir('seeds', 'md')
+    seed_file = FilePath.from_home_dir('seeds')
     seed_file.open_in_editor()
     
     seed_text = seed_file.read_content()
-    tweet_text = branch_to_tweet(seed_text)
+    tweet_text = branch(seed_text, "tweet")
 
-    tweet_file = FilePath.from_home_dir('tweets', 'md')
+    tweet_file = FilePath.from_home_dir('tweets')
     tweet_file.path = tweet_file.path.with_name(seed_file.path.name)  # Match the file name
     tweet_file.write_content(tweet_text)
     tweet_file.open_in_editor()
