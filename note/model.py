@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 FILE_EXTENSION="md"
 
+PATH_NOTES = Path.home() / "notes"
+
 class FilePath(BaseModel):
     path: Path
 
