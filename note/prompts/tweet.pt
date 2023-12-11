@@ -12,7 +12,7 @@ essence.
 
 so here is the input text:
 <SEED>
-{seed_text}
+{seed}
 </SEED>
 
 again, make sure its understandable by anyone.
