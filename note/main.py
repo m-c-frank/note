@@ -36,19 +36,7 @@ def create_new_note(branch_name):
 
     if MODE == "NOTE":
         return True
-    if MODE == "TEACH":
-        # perhaps randomly select from a list of aims
-        # buf for now just do the story one
-        # next will be the research one
-        text_target = grow(seed, "story")
-        improved_file= FilePath.from_home_dir('seeds')
-        improved_file.write_content(text_target + f"\n---\n[seed]({seed_file.path.name})\n---\n")
-        improved_file.open_in_editor()
-        return True
-    if MODE == "AUTO":
-        seed_new = grow(seed, "story")
-        text_target = grow(seed_new, "optimize")
-        return True
+
     return False
 
 def main():
