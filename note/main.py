@@ -1,19 +1,15 @@
-import os
-import subprocess
-import sys
-from pathlib import Path
-from pydantic import BaseModel
-
-import magic
+import mycelium
 from model import FilePath
 
-MODE = "TEACH"
+MODE = "NOTE"
+
 
 def grow(seed: str, target: str) -> str:
-    ## does magic and grows the seed into another representation
-    return magic.simple(seed, target)
+    # does magic and grows the seed into another representation
+    return mycelium.simple(seed, target)
 
-def create_new_note(branch_name):
+
+def create_new_note(branch_name="seeds", seed="note:"):
     """
     in note mode:
         just creates the note file and exits
@@ -30,17 +26,39 @@ def create_new_note(branch_name):
     else false
     """
     seed_file = FilePath.from_home_dir(branch_name)
+    seed_file.write_content(seed)
     seed_file.open_in_editor()
 
     seed = seed_file.read_content()
 
     if MODE == "NOTE":
-        return True
+        return seed
 
-    return False
+    return ""
+
 
 def main():
-    create_new_note("seeds")
+    seed = create_new_note("seeds")
+    if seed == "":
+        return
+
+    # its a language server for natural language
+    leaf = grow(seed, "story")
+    create_new_note("story", seed=leaf)
+
+    """ its literally a branching system. its like mycelium.
+    it will connect everything, but i want it to be more like
+    a superlight network maybe it will literally crystallize
+    and we can take the pure essence of language and make something with it.
+    you learn language the way you need it to learn.
+    its literally a mapping between a model of language
+    and your own interface of thoughts. i need to get copilot working again.
+    as soon as possible.
+    then i can write my notes in code and increase exponentially
+    every diff in a commit will be a note
+    so you can explain why you did things and can directly reflect
+    """
+
 
 if __name__ == "__main__":
     main()
