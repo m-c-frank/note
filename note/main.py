@@ -1,12 +1,12 @@
-import mycelium
-from model import FilePath
+from .mycelium import mutate
+from .model import FilePath
 
 MODE = "NOTE"
 
 
 def grow(seed: str, target: str) -> str:
     # does magic and grows the seed into another representation
-    return mycelium.simple(seed, target)
+    return mutate(seed, target)
 
 
 def create_new_note(branch_name="seeds", seed="note:"):

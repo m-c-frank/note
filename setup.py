@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'note=note.main:main',
+            'note=note.__main__:main',
         ],
     },
     install_requires=[
