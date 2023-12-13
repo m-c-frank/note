@@ -9,7 +9,7 @@ def grow(seed: str, target: str) -> str:
     return mutate(seed, target)
 
 
-def create_new_note(branch_name="seeds", seed="note:"):
+def create_new_note(branch_name="seeds", seed="note:", mode=MODE):
     """
     in note mode:
         just creates the note file and exits
@@ -31,10 +31,11 @@ def create_new_note(branch_name="seeds", seed="note:"):
 
     seed = seed_file.read_content()
 
-    if MODE == "NOTE":
+    if mode == "NOTE":
         return seed
-
-    return ""
+    else:
+        leaf = grow(seed, "story")
+        return create_new_note("story", seed=leaf, mode=mode)
 
 
 def main():
@@ -43,8 +44,6 @@ def main():
         return
 
     # its a language server for natural language
-    leaf = grow(seed, "story")
-    create_new_note("story", seed=leaf)
 
     """ its literally a branching system. its like mycelium.
     it will connect everything, but i want it to be more like
