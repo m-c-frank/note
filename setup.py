@@ -6,11 +6,10 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'note=note.__main__:main',
+            'note=note.__main__:entrypoint',
         ],
     },
     install_requires=[
     ],
-    python_requires='>=3.11',
+    python_requires='>=3.9',
 )
-

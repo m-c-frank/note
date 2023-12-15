@@ -1,15 +1,13 @@
 from .mycelium import mutate
 from .model import FilePath
 
-MODE = "NOTE"
-
 
 def grow(seed: str, target: str) -> str:
     # does magic and grows the seed into another representation
     return mutate(seed, target)
 
 
-def create_new_note(branch_name="seeds", seed="note:", mode=MODE):
+def create_new_note(branch_name="seeds", seed="note:", mode="note"):
     """
     in note mode:
         just creates the note file and exits
@@ -31,15 +29,15 @@ def create_new_note(branch_name="seeds", seed="note:", mode=MODE):
 
     seed = seed_file.read_content()
 
-    if mode == "NOTE":
+    if mode == "note":
         return seed
     else:
         leaf = grow(seed, "story")
         return create_new_note("story", seed=leaf, mode=mode)
 
 
-def main():
-    seed = create_new_note("seeds")
+def main(mode):
+    seed = create_new_note("seeds", mode=mode)
     if seed == "":
         return
 
