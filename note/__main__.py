@@ -11,14 +11,22 @@ def entrypoint():
         '--mode',
         type=str,
         default='note',
-        help='Set the mode of operation (default: "note")'
+        help='set the mode of operation (default: "note")'
+    )
+
+    # Add the --depth option
+    parser.add_argument(
+        '--depth',
+        type=int,
+        default=2,
+        help='set the depth of operation (default: 2)'
     )
 
     # Parse the arguments
     args = parser.parse_args()
 
     # Call the main function with the mode value
-    main(mode=args.mode)
+    main(mode=args.mode, depth=args.depth)
 
 
 if __name__ == "__main__":
