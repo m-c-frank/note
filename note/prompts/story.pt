@@ -17,6 +17,12 @@ the goal is to grow ideas from seeds into beautiful organisms
 so please help me out here and give it your best shot
 
 generate a paragraph in a sci fi book on ai that emerges biologically
-it bridges the gap between technology and evolution
+it basically behaves like mycelium
+it can compose autonomous agents which are powered by llms
+its like a mesh of neural networks
+each autonomous agent is a fork of a prototype
 and it really lets simple systems evolve
-similar to like a seed that grows into a beautiful tree
+the agents live inside their own docker container
+they manage their evolution using git
+they track their conversations using plain text files
+they have one endpoint and it responds with their identity and their response
