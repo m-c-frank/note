@@ -7,7 +7,12 @@ def grow(seed: str, target: str) -> str:
     return mutate(seed, target)
 
 
-def create_new_note(branch_name="seeds", seed="note:", mode="note"):
+def create_new_note(
+    branch_name: str = "seeds",
+    seed: str = "note:",
+    mode: str = "note",
+    depth: int = 1
+):
     """
     in note mode:
         just creates the note file and exits
@@ -30,14 +35,25 @@ def create_new_note(branch_name="seeds", seed="note:", mode="note"):
     seed = seed_file.read_content()
 
     if mode == "note":
+        # just a plain note nothing else
         return seed
     else:
-        leaf = grow(seed, "story")
-        return create_new_note("story", seed=leaf, mode=mode)
+        # this is the magic stuff
+        if (depth > 0):
+            leaf = grow(seed, mode)
+            return create_new_note(
+                mode,
+                seed=leaf,
+                mode=mode,
+                depth=depth-1
+            )
+        else:
+            return seed
 
 
-def main(mode):
-    seed = create_new_note("seeds", mode=mode)
+def main(mode, depth):
+    print(f"running with mode={mode} and depth={depth}")
+    seed = create_new_note("seeds", mode=mode, depth=depth)
     if seed == "":
         return
 
@@ -58,4 +74,4 @@ def main(mode):
 
 
 if __name__ == "__main__":
-    main()
+    main("note", 1)

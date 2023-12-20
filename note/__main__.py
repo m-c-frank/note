@@ -18,7 +18,7 @@ def entrypoint():
     parser.add_argument(
         '--depth',
         type=int,
-        default=2,
+        default=0,
         help='set the depth of operation (default: 2)'
     )
 
