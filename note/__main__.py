@@ -1,8 +1,8 @@
-from .main import main
+from .main import cli
 
 
 def entrypoint():
-    main()
+    cli()
 
 
 if __name__ == "__main__":
