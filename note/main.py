@@ -1,61 +1,132 @@
-from .mycelium import mutate
-from .model import FilePath
+import os
+import sys
+import subprocess
+from pathlib import Path
+from pydantic import BaseModel
+import fire
+
+# default location
+PATH_NOTES = os.getenv("PATH_NOTES", Path.home() / "notes" / "notes")
+EDITOR = os.getenv('EDITOR', 'notepad' if os.name == 'nt' else 'vim')
+FILE_EXTENSION = "md"
 
 
-def grow(seed: str, target: str) -> str:
-    # does magic and grows the seed into another representation
-    return mutate(seed, target)
+class Note(BaseModel):
+    """note model"""
+    repo: "Repository"
+    index: int
+
+    @property
+    def path(self) -> Path:
+        return self.repo.path / f"{self.index}.{FILE_EXTENSION}"
+
+    def open(self, editor: str = EDITOR):
+        subprocess.run([editor, str(self.path)])
+
+    def read_content(self) -> str:
+        with open(self.path, "r") as f:
+            return f.read()
+
+    def write_content(self, content: str) -> None:
+        with open(self.path, "w") as f:
+            f.write(content)
 
 
-def create_new_note(branch_name="seeds", seed="note:", mode="note"):
-    """
-    in note mode:
-        just creates the note file and exits
-    in teaching mode:
-        lets the ai attempt to improve the note
-        lets the user improve the mutated string
-        improve or approve it
-    in auto mode:
-        uses the optimize.pt system message
-        this is a file you should definitely edit
-        goal is to improve it periodically
+class Repository(BaseModel):
+    """repository in which notes exist"""
+    path: Path = PATH_NOTES
 
-    if success then returns true
-    else false
-    """
-    seed_file = FilePath.from_home_dir(branch_name)
-    seed_file.write_content(seed)
-    seed_file.open_in_editor()
+    def get_last_index(self) -> int:
+        highest_num = max(
+            (
+                int(p.stem) for p in self.path.glob(
+                    f'*.{FILE_EXTENSION}'
+                )
+                if p.stem.isdigit()
+            ),
+            default=0
+        )
+        return highest_num
 
-    seed = seed_file.read_content()
+    def get_last_note(self) -> Note:
+        index_note = self.get_last_index()
+        note = Note(repo=self, index=index_note)
+        return note
 
-    if mode == "note":
-        return seed
-    else:
-        leaf = grow(seed, "story")
-        return create_new_note("story", seed=leaf, mode=mode)
-
-
-def main(mode):
-    seed = create_new_note("seeds", mode=mode)
-    if seed == "":
-        return
-
-    # its a language server for natural language
-
-    """ its literally a branching system. its like mycelium.
-    it will connect everything, but i want it to be more like
-    a superlight network maybe it will literally crystallize
-    and we can take the pure essence of language and make something with it.
-    you learn language the way you need it to learn.
-    its literally a mapping between a model of language
-    and your own interface of thoughts. i need to get copilot working again.
-    as soon as possible.
-    then i can write my notes in code and increase exponentially
-    every diff in a commit will be a note
-    so you can explain why you did things and can directly reflect
-    """
+    def get_new_note(self) -> Note:
+        self.path.mkdir(parents=True, exist_ok=True)
+        note = self.get_last_note()
+        note.index += 1
+        return note
 
 
-if __name__ == "__main__":
-    main()
+def create_new_note():
+    """Create and open a new note, default action."""
+    repo = Repository()
+    new_note = repo.get_new_note()
+    new_note.open()
+
+
+def open_last_note():
+    """Open the last note."""
+    repo = Repository()
+    last_note = repo.get_last_note()
+    last_note.open()
+
+
+def list_notes():
+    """List all notes."""
+    repo = Repository()
+    for note_file in repo.path.glob(f'*.{FILE_EXTENSION}'):
+        print(note_file.stem)
+
+
+def read_note(index: int):
+    """Read a specific note by index."""
+    repo = Repository()
+    note = Note(repo=repo, index=index)
+    print(note.read_content())
+
+
+def edit_note(index: int):
+    """Edit a specific note by index."""
+    repo = Repository()
+    note = Note(repo=repo, index=index)
+    note.open()
+
+
+def delete_note(index: int):
+    """Delete a specific note by index."""
+    repo = Repository()
+    note = Note(repo=repo, index=index)
+    os.remove(note.path)
+
+
+def search_notes(term: str):
+    """Search for a term in all notes."""
+    repo = Repository()
+    for note_file in repo.path.glob(f'*.{FILE_EXTENSION}'):
+        note = Note(repo=repo, index=int(note_file.stem))
+        content = note.read_content()
+        if term.lower() in content.lower():
+            print(f"Found in {note_file.stem}:")
+            print(content)
+            print("-" * 20)
+
+
+def cli():
+    """CLI entry point."""
+    if len(sys.argv) == 1:
+        create_new_note()
+        exit()
+
+    fire.Fire({
+        'new': create_new_note,
+        'open_last': open_last_note,
+        'list': list_notes,
+        'read': read_note,
+        'edit': edit_note,
+        'delete': delete_note,
+        'search': search_notes,
+        'repository': Repository,
+    })
