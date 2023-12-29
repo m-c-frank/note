@@ -74,9 +74,12 @@ def list_notes():
         print(note_file.stem)
 
 
-def print_note(index: int):
+def print_note(index: int = -1):
     """Read a specific note by index."""
     repo = Repository()
+    if index <= -1:
+        last = repo.get_last_index()
+        index = last + index + 1
     note = Note(repo=repo, index=index)
     print(note.read_content())
 
