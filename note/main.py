@@ -67,13 +67,6 @@ def create_new_note():
     new_note.open()
 
 
-def open_last_note():
-    """Open the last note."""
-    repo = Repository()
-    last_note = repo.get_last_note()
-    last_note.open()
-
-
 def list_notes():
     """List all notes."""
     repo = Repository()
@@ -81,16 +74,19 @@ def list_notes():
         print(note_file.stem)
 
 
-def read_note(index: int):
+def print_note(index: int):
     """Read a specific note by index."""
     repo = Repository()
     note = Note(repo=repo, index=index)
     print(note.read_content())
 
 
-def edit_note(index: int):
+def edit_note(index: int = -1):
     """Edit a specific note by index."""
     repo = Repository()
+    if index <= -1:
+        last = repo.get_last_index()
+        index = last + index + 1
     note = Note(repo=repo, index=index)
     note.open()
 
@@ -122,9 +118,8 @@ def cli():
 
     fire.Fire({
         'new': create_new_note,
-        'open_last': open_last_note,
         'list': list_notes,
-        'read': read_note,
+        'print': print_note,
         'edit': edit_note,
         'delete': delete_note,
         'search': search_notes,
