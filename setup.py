@@ -10,6 +10,7 @@ setup(
         ],
     },
     install_requires=[
+        "fire"
     ],
     python_requires='>=3.9',
 )

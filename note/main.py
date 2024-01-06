@@ -1,9 +1,9 @@
 import os
 import sys
-import subprocess
 from pathlib import Path
-from pydantic import BaseModel
+from .model import Note, Repository
 import fire
+import uvicorn
 
 # default location
 PATH_NOTES = os.getenv("PATH_NOTES", Path.home() / "notes" / "notes")
@@ -11,106 +11,81 @@ EDITOR = os.getenv('EDITOR', 'notepad' if os.name == 'nt' else 'vim')
 FILE_EXTENSION = "md"
 
 
-class Note(BaseModel):
-    """note model"""
-    repo: "Repository"
-    index: int
-
-    @property
-    def path(self) -> Path:
-        return self.repo.path / f"{self.index}.{FILE_EXTENSION}"
-
-    def open(self, editor: str = EDITOR):
-        subprocess.run([editor, str(self.path)])
-
-    def read_content(self) -> str:
-        with open(self.path, "r") as f:
-            return f.read()
-
-    def write_content(self, content: str) -> None:
-        with open(self.path, "w") as f:
-            f.write(content)
+def get_repo_notes() -> Repository:
+    """Get the notes repository."""
+    return Repository(node_type=Note)
 
 
-class Repository(BaseModel):
-    """repository in which notes exist"""
-    path: Path = PATH_NOTES
-
-    def get_last_index(self) -> int:
-        highest_num = max(
-            (
-                int(p.stem) for p in self.path.glob(
-                    f'*.{FILE_EXTENSION}'
-                )
-                if p.stem.isdigit()
-            ),
-            default=0
-        )
-        return highest_num
-
-    def get_last_note(self) -> Note:
-        index_note = self.get_last_index()
-        note = Note(repo=self, index=index_note)
-        return note
-
-    def get_new_note(self) -> Note:
-        self.path.mkdir(parents=True, exist_ok=True)
-        note = self.get_last_note()
-        note.index += 1
-        return note
-
-
-def create_new_note():
+def create_new_note() -> None:
     """Create and open a new note, default action."""
-    repo = Repository()
-    new_note = repo.get_new_note()
-    new_note.open()
+    repo = get_repo_notes()
+    new_note = repo.new_node()
+    new_note.edit()
 
 
-def list_notes():
+def write_new_note(content: str, silent: str=True) -> None:
+    """Create a new note with the given content and open it."""
+    repo = get_repo_notes()
+    new_note = repo.new_node()
+    new_note.write(content)
+    if not silent:
+        new_note.edit()
+
+
+def list_notes() -> list:
     """List all notes."""
-    repo = Repository()
-    for note_file in repo.path.glob(f'*.{FILE_EXTENSION}'):
-        print(note_file.stem)
+    repo = get_repo_notes()
+    return repo.nodes
 
 
-def print_note(index: int = -1):
+def print_note(index: int = -1) -> str:
     """Read a specific note by index."""
-    repo = Repository()
-    if index <= -1:
-        last = repo.get_last_index()
-        index = last + index + 1
-    note = Note(repo=repo, index=index)
-    print(note.read_content())
+    repo = get_repo_notes()
+    note = Note.from_repository(repo=repo, index=index)
+    return note.meta
 
 
 def edit_note(index: int = -1):
     """Edit a specific note by index."""
-    repo = Repository()
-    if index <= -1:
-        last = repo.get_last_index()
-        index = last + index + 1
-    note = Note(repo=repo, index=index)
-    note.open()
-
-
-def delete_note(index: int):
-    """Delete a specific note by index."""
-    repo = Repository()
-    note = Note(repo=repo, index=index)
-    os.remove(note.path)
+    repo = get_repo_notes()
+    note = Note.from_repository(repo=repo, index=index)
+    note.edit()
 
 
 def search_notes(term: str):
     """Search for a term in all notes."""
-    repo = Repository()
-    for note_file in repo.path.glob(f'*.{FILE_EXTENSION}'):
-        note = Note(repo=repo, index=int(note_file.stem))
-        content = note.read_content()
-        if term.lower() in content.lower():
-            print(f"Found in {note_file.stem}:")
-            print(content)
-            print("-" * 20)
+    repo = get_repo_notes()
+    result = ""
+    for index in repo.index_nodes:
+        note = Note(repo=repo, index=index)
+        content = note.meta
+        if term.lower() in content:
+            result += content
+    return result
+
+
+def serve():
+    from fastapi import FastAPI, HTTPException
+    from pydantic import BaseModel
+
+    app = FastAPI()
+
+    class Note(BaseModel):
+        text: str
+
+    def process_text(text: str) -> str:
+        write_new_note(text)
+        return f"Processed text: {text}"
+
+    @app.post("/")
+    async def process(note: Note):
+        try:
+            result = process_text(note.text)
+            return {"result": result}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    uvicorn.run(app, host="localhost", port=8200)
 
 
 def cli():
@@ -121,10 +96,11 @@ def cli():
 
     fire.Fire({
         'new': create_new_note,
+        'write': write_new_note,
         'list': list_notes,
         'print': print_note,
         'edit': edit_note,
-        'delete': delete_note,
         'search': search_notes,
+        'serve': serve,
         'repository': Repository,
     })
