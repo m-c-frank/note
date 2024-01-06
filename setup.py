@@ -10,7 +10,13 @@ setup(
         ],
     },
     install_requires=[
-        "fire"
+        'fire',
     ],
-    python_requires='>=3.9',
+    author='Martin Christoph Frank',
+    author_email='martinchristophfrank@gmail.com',
+    description='take notes.',
+    long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
+    url='http://localhost:8080/mcfrank/note'
 )
+
