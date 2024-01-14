@@ -21,7 +21,13 @@ func main() {
 		return
 	}
 
-	note := takeNote(rawNote)
+	origin, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error: ", err)
+		return
+	}
+
+	note := takeNote(rawNote, origin)
 
 	homeDir := os.Getenv("HOME")
 	if homeDir == "" {
@@ -55,7 +61,7 @@ func main() {
 }
 
 
-func takeNote(rawnote string) string {
+func takeNote(rawnote string, origin string) string {
 	userName := os.Getenv("USER")
 	if userName == "" {
 		userName = "mcfrank"
@@ -70,14 +76,14 @@ abstract:
 summary:
 graphic:
 references: 
-origin:
+origin: %s
 ---
-`, userName, time.Now().Format(time.RFC3339))
+`, userName, time.Now().Format(time.RFC3339), origin)
 	return frontmatter+rawnote
 }
 
 func writeFile(note string) (string, error) {
-	noteFileName := fmt.Sprintf("%s.txt", time.Now().Format("2006-01-02_15-04-05"))
+	noteFileName := fmt.Sprintf("%s.md", time.Now().Format("2006-01-02_15-04-05"))
 
 	notesDir := os.Getenv("PATH_NOTES")
 	noteFilePath := filepath.Join(notesDir, noteFileName)
