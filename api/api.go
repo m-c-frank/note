@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"errors"
@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func api(rawNote string, origin string) (string, error) {
+func Call(rawNote string, origin string) (string, error) {
 	userName := os.Getenv("USER")
 	if userName == "" {
 		userName = "mcfrank"

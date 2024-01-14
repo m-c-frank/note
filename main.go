@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	noteapi "github.com/m-c-frank/note/api"
 )
 
 func main() {
@@ -24,5 +25,5 @@ func main() {
 		return
 	}
 
-	api(rawNote, origin)
+	noteapi.Call(rawNote, origin)
 }
