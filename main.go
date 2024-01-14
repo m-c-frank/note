@@ -114,6 +114,18 @@ func gitCommit(noteFilePath string) error {
 		return err
 	}
 
+	if !hasGitRepository(notesDir) {
+		cmd := exec.Command("git", "init", ".")
+		cmd.Dir = notesDir
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err = cmd.Run()
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return err
+		}
+	}
+
 	cmd := exec.Command("git", "add", absoluteNoteFilePath)
 	cmd.Dir = notesDir
 	cmd.Stdout = os.Stdout
@@ -136,4 +148,19 @@ func gitCommit(noteFilePath string) error {
 	}
 
 	return err
+}
+
+
+func hasGitRepository(path string) bool {
+    // check if the .git directory itself exists
+    info, err := os.Stat(filepath.Join(path, ".git"))
+    if err != nil {
+        fmt.Println("No git repo found in directory:", err)
+        return false
+    }
+    // If the stat information is not nil and is a directory, it means a .git directory exists
+    if info.IsDir() {
+        return true
+    }
+    return false
 }
