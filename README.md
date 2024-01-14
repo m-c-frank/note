@@ -4,7 +4,7 @@ this just helps you have all your notes in one location
 
 it also will get a lot of llm features to help you with publishing your ideas
 
-keep an eye out for [mycelium](https://github.com/hyphalnet/mycelium)
+keep an eye out for [celium](https://github.com/m-c-frank/note/docs/abstract.md)
 
 ## installation
 

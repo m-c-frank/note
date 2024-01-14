@@ -68,7 +68,8 @@ date: "%s"
 abstract:
 summary:
 graphic:
-sources: 
+references: 
+origin:
 ---
 `, userName, time.Now().Format(time.RFC3339))
 	return frontmatter+rawnote
