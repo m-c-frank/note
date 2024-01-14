@@ -65,6 +65,7 @@ func takeNote(rawnote string) string {
 title: note
 author: "%s"
 date: "%s"
+keywords:
 abstract:
 summary:
 graphic:
