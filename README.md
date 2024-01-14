@@ -8,24 +8,14 @@ keep an eye out for [mycelium](https://github.com/hyphalnet/mycelium)
 
 ## installation
 
-using the install.sh script
+requirements are an installation of go and the ability to read
+
+using the [install.sh](https://github.com/m-c-frank/note/install.sh) script
 
 ```
-curl https://github.com/m-c-frank/note/install.sh | sh
-```
-
-### if you care:
-
-the install script uses [makecli](https://github.com/m-c-frank/makecli)
-its a tool to turn any go program that exposes a runnable main.go into a cli
-works on most generic machinest that run linux
-
-```
-curl https://github.com/m-c-frank/makecli/install.sh | sh
-source ~/.bashrc
 git clone https://github.com/m-c-frank/note
 cd note
-makecli -name note -source main.go
+bash install.sh
 ```
 
 ## how it works
