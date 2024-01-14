@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	apiNote "github.com/m-c-frank/note/api"
 )
 
 func main() {
@@ -25,5 +24,5 @@ func main() {
 		return
 	}
 
-	apiNote.api()
+	api(rawNote, origin)
 }

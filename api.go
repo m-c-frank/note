@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ func api(rawNote string, origin string) (string, error) {
 		userName = "mcfrank"
 	}
 
-	note := composeNote(rawNote, origin)
+	note := composeNote(rawNote, userName, origin)
 
 	homeDir := os.Getenv("HOME")
 	if homeDir == "" {
@@ -44,7 +44,7 @@ func api(rawNote string, origin string) (string, error) {
 	return "", nil
 }
 
-func composeNote(rawnote string, origin string) string {
+func composeNote(rawnote string, author string, origin string) string {
 
 	frontmatter := fmt.Sprintf(`---
 title: note
@@ -57,7 +57,7 @@ graphic:
 references: 
 origin: %s
 ---
-`, userName, time.Now().Format(time.RFC3339), origin)
+`, author, time.Now().Format(time.RFC3339), origin)
 	return frontmatter + rawnote
 }
 
