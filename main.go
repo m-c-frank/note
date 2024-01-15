@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -12,10 +13,11 @@ import (
 func cli() (string, string, error) {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: note <message>")
-		return "", "", nil
+		return "", "", errors.New("you must enter some text")
 	}
 
 	rawNote := strings.Join(os.Args[1:], " ")
+
 	fmt.Println("The note i received was: ", rawNote)
 	if rawNote == "" {
 		fmt.Println("For some reason your note was not saved")
