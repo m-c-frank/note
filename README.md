@@ -15,7 +15,7 @@ using the [install.sh](https://github.com/m-c-frank/note/install.sh) script
 ```
 git clone https://github.com/m-c-frank/note
 cd note
-bash install.sh
+mkcli -name note -source main.go
 ```
 
 ## how it works
