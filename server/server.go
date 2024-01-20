@@ -37,11 +37,18 @@ func main() {
 		if err != nil {
 			return
 		}
-		api.PersistNote(note, repoPath)
+		err = api.PersistNote(note, repoPath)
+		if err != nil {
+			return
+		}
 		// Respond
 		c.JSON(http.StatusOK, gin.H{"status": "Note received"})
 	})
 
 	// Run the server on localhost:3010
-	r.Run("localhost:3010")
+	err := r.Run("localhost:3010")
+	if err != nil {
+		return
+	}
+
 }
