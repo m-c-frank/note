@@ -83,7 +83,7 @@ func hasGitRepository(repositoryPath string) (bool, error) {
     info, err := os.Stat(filepath.Join(repositoryPath, ".git"))
     if err != nil {
         fmt.Println("No git repo found in directory:", err)
-        return false, err
+        return false, nil
     }
     // If the stat information is not nil and is a directory, it means a .git directory exists
     if info.IsDir() {
