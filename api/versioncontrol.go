@@ -9,7 +9,7 @@ import (
 )
 
 func writeFile(note string, repositoryPath string) (string, error) {
-	noteFileName := fmt.Sprintf("%s.md", time.Now().Format("2006-01-02_15-04-05"))
+	noteFileName := fmt.Sprintf("%d.md", time.Now().UnixMilli())
 
 	noteFilePath := filepath.Join(repositoryPath, noteFileName)
 
